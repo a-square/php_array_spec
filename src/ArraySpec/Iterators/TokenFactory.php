@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 // creates tokens of appropriate types to denote beginnings
 // and ends of arrays

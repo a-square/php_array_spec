@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 class Token {
     const ARRAY_BEGIN = 'ARRAY_BEGIN';

@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 // The array iterator class that serializes nested arrays in
 // a reversible fashion in order.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 interface Util {
     // must return true when the array should

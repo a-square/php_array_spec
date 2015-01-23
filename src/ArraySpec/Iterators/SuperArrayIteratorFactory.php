@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 class SuperArrayIteratorFactory implements ArrayIteratorFactory, SerializingArrayIteratorFactory {
     public function __construct(Util $util) {

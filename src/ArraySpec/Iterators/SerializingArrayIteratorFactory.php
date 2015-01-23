@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 interface SerializingArrayIteratorFactory {
     public function createSerializingIterator($value);

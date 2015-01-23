@@ -1,6 +1,6 @@
 <?php
 
-namespace Lightsoft\ArraySpec;
+namespace Lightsoft\ArraySpec\Iterators;
 
 // iterates an array as key0, value0, key1, value1...
 class AssocArrayIterator implements \Iterator {
