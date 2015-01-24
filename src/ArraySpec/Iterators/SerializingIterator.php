@@ -2,12 +2,8 @@
 
 namespace Lightsoft\ArraySpec\Iterators;
 
-// The array iterator class that serializes nested arrays in
+// The iterator class that serializes nested structures in
 // a reversible fashion in order.
-//
-// It works with arrays of primitive data (including nested arrays)
-// in a way that is consistent with how this array would be
-// serialized in a high level language syntax, such as JSON.
 //
 // For example:
 // array(1, 2, 3) -> ARRAY_BEGIN, 1, 2, 3, ARRAY_END
@@ -15,9 +11,10 @@ namespace Lightsoft\ArraySpec\Iterators;
 //
 // An array is considered associative if its first index is a
 // string.
-class SerializingArrayIterator implements \Iterator {
-    public function __construct(ArrayIteratorFactory $iteratorFactory, $value) {
+class SerializingIterator implements \Iterator {
+    public function __construct(IteratorFactory $iteratorFactory, TokenFactory $tokenFactory, $value) {
         $this->_iteratorFactory = $iteratorFactory;
+        $this->_tokenFactory = $tokenFactory;
         $this->_value = $value;
     }
     
@@ -35,9 +32,9 @@ class SerializingArrayIterator implements \Iterator {
         $lastIterator = $this->_popIterator();
         $currentValue = $lastIterator->current();
         
-        if (is_array($currentValue)) {
-            // if the last iterator points to an array, push this
-            // array's iterator to the 
+        if ($this->_iteratorFactory->isIterable($currentValue)) {
+            // if the last iterator post to an iterable, push
+            // its iterator to the stack
             $this->_pushIterator($lastIterator);
             $this->_pushIterator($this->_iteratorFactory->createIterator($currentValue));
             
@@ -105,7 +102,7 @@ class SerializingArrayIterator implements \Iterator {
         if ($last->valid()) {
             $this->_value = self::_getIteratorValue($last);
         } else {
-            $this->_value = Token::autoArrayEnd($prev->value());
+            $this->_value = $this->_tokenFactory->end();
         }
     }
     
@@ -118,7 +115,7 @@ class SerializingArrayIterator implements \Iterator {
         
         $value = $iterator->current();
         if (is_array($value)) {
-            return Token::autoArrayBegin($value);
+            return $this->_tokenFactory->begin();
         } else {
             return $value;
         }
@@ -142,6 +139,8 @@ class SerializingArrayIterator implements \Iterator {
     // besides the basics, so in theory the factory can do
     // any crazy thing it wants as long as it outputs iterators
     private $_iteratorFactory;
+    
+    private $_tokenFactory;
     
     // stored for the sole purpose of this iterator being rewindable
     private $_value;

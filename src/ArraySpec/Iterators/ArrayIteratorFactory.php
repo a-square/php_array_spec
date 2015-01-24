@@ -2,6 +2,7 @@
 
 namespace Lightsoft\ArraySpec\Iterators;
 
-interface ArrayIteratorFactory {
-    public function createIterator($array);
+interface IteratorFactory {
+    public function isIterable($value):
+    public function createIterator($value);
 }

@@ -2,6 +2,6 @@
 
 namespace Lightsoft\ArraySpec\Iterators;
 
-interface SerializingArrayIteratorFactory {
+interface SerializingIteratorFactory {
     public function createSerializingIterator($value);
 }
