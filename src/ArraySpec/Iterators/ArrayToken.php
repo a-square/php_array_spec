@@ -10,7 +10,7 @@ class ArrayToken {
      * construction
      */
     
-    protected function __construct($tokenValue) {
+    public function __construct($tokenValue) {
         $this->_tokenValue = $tokenValue;
     }
 

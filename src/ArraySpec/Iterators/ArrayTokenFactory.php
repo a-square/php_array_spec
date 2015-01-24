@@ -10,7 +10,7 @@ class ArrayTokenFactory implements TokenFactory {
             $this->_beginInstance = new ArrayToken(ArrayToken::ARRAY_BEGIN);
         }
         
-        return self::_beginInstance;
+        return $this->_beginInstance;
     }
     
     public function end() {
