@@ -72,6 +72,14 @@ class SerializingIterator implements \Iterator {
         return $this->_iteratorStack[0]->valid();
     }
     
+    public function getKeyTrace() {
+        $trace = array();
+        $count = count($this->_iteratorStack);
+        for ($i = 1; $i < $count; ++$i) {
+            $trace[] = $this->_iteratorStack[$i]->key();
+        }
+    }
+    
     private function _rewindIteratorStack() {
         $this->_iteratorStack = array(
             // wrapping the whole value in an array

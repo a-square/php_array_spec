@@ -8,7 +8,7 @@ namespace Lightsoft\ArraySpec;
 // there's high variability in ways you could approach these problems,
 // so it is expected that a utility class is created for a coherent
 // approach and then exposed via each submodule's Util facade interface
-class StandardUtil implements Iterators\Util {
+class StandardUtil {
     // a simplified test of whether the array should be treated
     // as associative. Works for JSON-compatible arrays and
     // the distinction is arbitrary otherwise anyway
