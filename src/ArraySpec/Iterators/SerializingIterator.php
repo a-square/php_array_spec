@@ -78,6 +78,8 @@ class SerializingIterator implements \Iterator {
         for ($i = 1; $i < $count; ++$i) {
             $trace[] = $this->_iteratorStack[$i]->key();
         }
+        
+        return $trace;
     }
     
     private function _rewindIteratorStack() {
