@@ -1,6 +1,6 @@
 <?php
 
-require 'vendor/autoload.php';
+require_once 'vendor/autoload.php';
 
 class ArrayTokenFactoryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -29,6 +29,6 @@ class ArrayTokenFactoryTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($end1 === $end2, 'Ends are identical');
     }
     
-    /** @var TokenFactory */
+    /** @var \Lightsoft\ArraySpec\Iterators\TokenFactory */
     private $_tokenFactory;
 }

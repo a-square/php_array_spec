@@ -3,8 +3,8 @@
 namespace Lightsoft\ArraySpec\Iterators;
 
 class StandardIteratorFactory implements IteratorFactory, SerializingIteratorFactory {
-    public function __construct(TokenFactory $tokenFactory, Util $util) {
-        $this->_util = $util;
+    public function __construct(TokenFactory $tokenFactory) {
+        $this->_tokenFactory = $tokenFactory;
     }
     
     public function isIterable($value) {
@@ -20,8 +20,8 @@ class StandardIteratorFactory implements IteratorFactory, SerializingIteratorFac
     }
     
     public function createSerializingIterator($value) {
-        return new SerializingIterator($this, $tokenFactory, $value);
+        return new SerializingIterator($this, $this->_tokenFactory, $value);
     }
     
-    protected $_util;
+    protected $_tokenFactory;
 }
