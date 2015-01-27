@@ -1,21 +1,23 @@
 <?php
 
+/**
+ * @author Alexei Averchenko <lex.aver@gmail.com>
+ * @copyright 2015 Lightsoft Research
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
+
 namespace Lightsoft\ArraySpec\Iterators;
 
-// The iterator class that serializes nested structures in
-// a reversible fashion in order.
-//
-// For example:
-// array(1, 2, 3) -> ARRAY_BEGIN, 1, 2, 3, ARRAY_END
-// array('foo', 'bar') -> ASSOC_BEGIN, 'foo', 'bar', ASSOC_END
-//
-// An array is considered associative if its first index is a
-// string.
+/**
+ * 
+ */
 class SerializingIterator implements \Iterator {
     public function __construct(IteratorFactory $iteratorFactory, TokenFactory $tokenFactory, $value) {
         $this->_iteratorFactory = $iteratorFactory;
         $this->_tokenFactory = $tokenFactory;
-        $this->_value = $value;
+        $this->_iteratedValue = $value;
+        
+        $this->_resetIteratorStack();
     }
     
     public function current() {
@@ -28,6 +30,10 @@ class SerializingIterator implements \Iterator {
     
     // TODO: reduce the number of pushes and pops?
     public function next() {
+        if (!$this->valid()) {
+            throw new \LogicException('Next called on an invalid iterator');
+        }
+        
         // remove the last iterator from the array
         $lastIterator = $this->_popIterator();
         $currentValue = $lastIterator->current();
@@ -38,12 +44,12 @@ class SerializingIterator implements \Iterator {
             $this->_pushIterator($lastIterator);
             $this->_pushIterator($this->_iteratorFactory->createIterator($currentValue));
             
-            $this->_value = Token::autoArrayBegin($lastIterator->current());
+            $this->_value = $this->_tokenFactory->begin();
         } else if($lastIterator->valid()) {
             // if no deeper recursion is necessary and the iterator is
             // still valid, simply advance it
             $lastIterator->next();
-            $this->_pushIterator($this->_iteratorStack, $lastIterator);
+            $this->_pushIterator($lastIterator);
             
             $this->_value = $lastIterator->current();
         } else {
@@ -59,8 +65,7 @@ class SerializingIterator implements \Iterator {
             $this->_pushIterator($lastIterator);
         }
 
-        $this->_key = $lastIterator->key();
-        $this->_generateValue();
+        $this->_generateKeyValuePair();
     }
     
     public function rewind() {
@@ -82,55 +87,37 @@ class SerializingIterator implements \Iterator {
         return $trace;
     }
     
-    private function _rewindIteratorStack() {
+    private function _resetIteratorStack() {
         $this->_iteratorStack = array(
             // wrapping the whole value in an array
             // so that all the algorithms work properly
             // without special treatment of the root
-            new \ArrayIterator(array($value))
+            new \ArrayIterator(array($this->_iteratedValue))
         );
         
-        $this->_generateValue();
+        $this->_generateKeyValuePair();
     }
 
-    private function _generateValue() {
+    private function _generateKeyValuePair() {
         assert(!empty($this->_iteratorStack));
 
-        // special case: at the root
-        if (count($this->_iteratorStack) === 1) {
-            $root = $this->_iteratorStack[0];
-            $this->_value = self::_getIteratorValue($root);
-            return;
-        }
-
         $count = count($this->_iteratorStack);
-        $last = $this->_iteratorStack[$count - 1];
-        $prev = $this->_iteratorStack[$count - 2];
+        $lastIterator = $this->_iteratorStack[$count - 1];
         
-        // the last iterator is only invalid when it's at the end of an array,
-        // in which case the previous iterator is pointing to that array
-        if ($last->valid()) {
-            $this->_value = self::_getIteratorValue($last);
-        } else {
+        if (!$lastIterator->valid()) {
             $this->_value = $this->_tokenFactory->end();
+        } else {
+            $value = $lastIterator->current();
+            if ($this->_iteratorFactory->isIterable($value)) {
+                $this->_value = $this->_tokenFactory->begin();
+            } else {
+                $this->_value = $value;
+            }
         }
+        
+        $this->_key = $lastIterator->key();
     }
     
-    // wraps ArrayIterator::current() to return the proper
-    // token rather than expose the nested array
-    private static function _getIteratorValue($iterator) {
-        if (!$iterator->valid()) {
-            return null;
-        }
-        
-        $value = $iterator->current();
-        if (is_array($value)) {
-            return $this->_tokenFactory->begin();
-        } else {
-            return $value;
-        }
-    }
- 
     // pushes the iterator to the iterator stack
     private function _pushIterator($iterator) {
         array_push($this->_iteratorStack, $iterator);
@@ -153,7 +140,7 @@ class SerializingIterator implements \Iterator {
     private $_tokenFactory;
     
     // stored for the sole purpose of this iterator being rewindable
-    private $_value;
+    private $_iteratedValue;
 
     // the iterator stack implemented as a simple array.
     // Not using a more specialized structure is useful

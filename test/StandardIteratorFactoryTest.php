@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @author Alexei Averchenko <lex.aver@gmail.com>
+ * @copyright 2015 Lightsoft Research
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ */
+
 require_once 'vendor/autoload.php';
 
 class StandardIteratorFactoryTest extends PHPUnit_Framework_TestCase {
