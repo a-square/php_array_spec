@@ -9,13 +9,30 @@
 namespace Lightsoft\ArraySpec\Iterators;
 
 /**
- * 
+ * Iterates over possibly recurrent structures in order
+ * using special tokens to denote their beginnings and ends
+ *
+ * Allows clients to inspect complicated recurrent data structures
+ * in linear fashion, simplifying visitor pattern implementations
+ * that are themselves recursive
+ *
+ * Depends on abstract factories IteratorFactory and TokenFactory
  */
 class SerializingIterator implements \Iterator {
+    /**
+     * @param IteratorFactory $iteratorFactory determines which
+     * values should be recursed into and handles creation of
+     * iterators for them
+     *
+     * @param TokenFactory $tokenFactory handles creation of tokens
+     * denoting beginnings and ends of iterable structures
+     *
+     * @param $value The value to be iterated
+     */
     public function __construct(IteratorFactory $iteratorFactory, TokenFactory $tokenFactory, $value) {
         $this->_iteratorFactory = $iteratorFactory;
         $this->_tokenFactory = $tokenFactory;
-        $this->_iteratedValue = $value;
+        $this->_initialValue = $value;
         
         $this->_resetIteratorStack();
     }
@@ -24,11 +41,23 @@ class SerializingIterator implements \Iterator {
         return $this->_value;
     }
     
+    /**
+     * Iterator key
+     *
+     * @return mixed Depends on the nature of the structure being iterated,
+     * do not count on it being an integer or a string, or even primitive value
+     */
     public function key() {
         return $this->_key;
     }
     
-    // TODO: reduce the number of pushes and pops?
+    /**
+     * Iterator value
+     *
+     * @throws \LogicException when the iterator is invalid
+     *
+     * @return mixed
+     */
     public function next() {
         if (!$this->valid()) {
             throw new \LogicException('Next called on an invalid iterator');
@@ -76,28 +105,40 @@ class SerializingIterator implements \Iterator {
         assert(!empty($this->_iteratorStack), 'Empty iterator stack');
         return $this->_iteratorStack[0]->valid();
     }
-    
+
+    /**
+     * Generates the trace of all keys leading up to the current value
+     *
+     * ???: what about the end token, what key should it have?
+     */
     public function getKeyTrace() {
         $trace = array();
-        $count = count($this->_iteratorStack);
-        for ($i = 1; $i < $count; ++$i) {
-            $trace[] = $this->_iteratorStack[$i]->key();
+        foreach ($this->_iteratorStack as $iterator) {
+            $trace[] = $iterator->key();
         }
         
         return $trace;
     }
     
+    /**
+     * Effectively rewinds the iterator by resetting the iterator
+     * stack so that it points to the root value
+     */
     private function _resetIteratorStack() {
         $this->_iteratorStack = array(
             // wrapping the whole value in an array
             // so that all the algorithms work properly
             // without special treatment of the root
-            new \ArrayIterator(array($this->_iteratedValue))
+            new \ArrayIterator(array($this->_initialValue))
         );
         
         $this->_generateKeyValuePair();
     }
 
+    /**
+     * Generates the key and value of the iterator from
+     * the current iterator stack
+     */
     private function _generateKeyValuePair() {
         assert(!empty($this->_iteratorStack));
 
@@ -118,44 +159,36 @@ class SerializingIterator implements \Iterator {
         $this->_key = $lastIterator->key();
     }
     
-    // pushes the iterator to the iterator stack
+    /**
+     * Pushes the iterator to the iterator stack
+     */
     private function _pushIterator($iterator) {
         array_push($this->_iteratorStack, $iterator);
     }
     
-    // pops the iterator out of the iterator stack
+    /**
+     * Pops the iterator out of the iterator stack
+     */
     private function _popIterator() {
         assert(!empty($this->_iteratorStack), 'Empty iterator stack');
         return array_pop($this->_iteratorStack);
     }
     
-    // used to create (flat) array iterators that detect if
-    // the array is associative and behave correctly
-    //
-    // our code makes no assumption about these iterators
-    // besides the basics, so in theory the factory can do
-    // any crazy thing it wants as long as it outputs iterators
+    /** @var IteratorFactory $_iteratorFactory */
     private $_iteratorFactory;
     
+    /** @var TokenFactory $_tokenFactory */
     private $_tokenFactory;
     
-    // stored for the sole purpose of this iterator being rewindable
-    private $_iteratedValue;
+    /** @var mixed $_initialValue stored for the sole purpose of this iterator being rewindable */
+    private $_initialValue;
 
-    // the iterator stack implemented as a simple array.
-    // Not using a more specialized structure is useful
-    // because it allows us to freely explore the stack's
-    // contents
-    //
-    // normally the iterator stack is never empty
+    /** @var array $_iteratorStack */
     private $_iteratorStack;
-    
-    // the $this->key() value
+
+    /** @var mixed $_key iterator key */    
     private $_key = null;
-    
-    // the $this->current() value.
-    // Using this cannot be avoided because we don't always have
-    // actual value handy so sometimes we use specialized tokens
-    // in place of a primitive type value
+
+    /** @var mixed $_value iterator value */    
     private $_value = null;
 }

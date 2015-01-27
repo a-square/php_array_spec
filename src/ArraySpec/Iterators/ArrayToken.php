@@ -8,6 +8,9 @@
 
 namespace Lightsoft\ArraySpec\Iterators;
 
+/**
+ * A token class for use with SerializingIterator when serializing arrays
+ */
 class ArrayToken {
     const ARRAY_BEGIN = 0;
     const ARRAY_END = 1;

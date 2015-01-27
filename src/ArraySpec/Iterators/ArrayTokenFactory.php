@@ -8,8 +8,11 @@
 
 namespace Lightsoft\ArraySpec\Iterators;
 
-// creates tokens of appropriate types to denote beginnings
-// and ends of arrays
+/**
+ * An ArrayToken factory for use with SerializingIterator
+ * 
+ * Implements the Abstract Factory and Flyweight patterns
+ */
 class ArrayTokenFactory implements TokenFactory {
     public function begin() {
         if ($this->_beginInstance === null) {

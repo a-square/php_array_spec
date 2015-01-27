@@ -8,9 +8,14 @@
 
 require_once 'vendor/autoload.php';
 
-// needed because the serializing iterator may use
-// keys normal array would never use, and it may use
-// them multiple times
+/**
+ * Helper iterator treating values 0, 2, 4 etc as keys and
+ * values 1, 3, 5 etc as values
+ *
+ * It's useful because the serializing iterator may use
+ * keys normal array would never use, and it may use
+ * them multiple times
+ */
 class KeyValueIterator implements \Iterator {
     public function __construct($array) {
         $this->_arrayIterator = new \ArrayIterator($array);
@@ -53,6 +58,10 @@ class KeyValueIterator implements \Iterator {
     private $_arrayIterator, $_key, $_value, $_valid;
 }
 
+/**
+ * Tests \Lightsoft\ArraySpec\Iterators\StandardIteratorFactory as an
+ * implementation of \Lightsoft\ArraySpec\Iterators\IteratorFactory
+ */
 class StandardSerializingIteratorFactoryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->_init();

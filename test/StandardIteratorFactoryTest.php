@@ -8,6 +8,10 @@
 
 require_once 'vendor/autoload.php';
 
+/**
+ * Tests \Lightsoft\ArraySpec\Iterators\StandardIteratorFactory
+ * as an implementation of \Lightsoft\ArraySpec\Iterators\IteratorFactory
+ */
 class StandardIteratorFactoryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $tokenFactory = new \Lightsoft\ArraySpec\Iterators\ArrayTokenFactory();
