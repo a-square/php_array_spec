@@ -27,6 +27,8 @@ class StandardIteratorFactory implements IteratorFactory, SerializingIteratorFac
     }
     
     /**
+     * @throws \LogicException if $value is not an array
+     *
      * @return \ArrayIterator
      */
     public function createIterator($value) {
