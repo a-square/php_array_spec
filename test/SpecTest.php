@@ -243,6 +243,10 @@ class SpecTest extends PHPUnit_Framework_TestCase {
             array(
                 array('int', 'string'),
             ),
+            
+            array(
+                new \Lightsoft\ArraySpec\Util(),
+            ),
         );
     }
     

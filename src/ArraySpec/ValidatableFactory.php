@@ -57,6 +57,8 @@ class ValidatableFactory {
         if ($spec instanceof Respect\Validation\Validatable) {
             return $spec;
         }
+        
+        throw new \LogicException("Invalid spec:\n" . print_r($spec, true));
     }
     
     private function _createValidatableFromAssoc($array) {
