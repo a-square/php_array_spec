@@ -10,10 +10,10 @@ namespace Lightsoft\ArraySpec;
 
 use Respect\Validation\Validator as v;
 
-class SpecFactory {
-    public function __construct() {
+class ValidatableFactory {
+    public function __construct($util) {
+        $this->_util = $util;
         $this->_precacheSpecs();
-        $this->_util = new Util();
     }
     
     public function createValidatable($spec) {
@@ -35,17 +35,22 @@ class SpecFactory {
         }
 
         if ($spec === null) {
-            return v::nullValue();
+            return $this->_cachedSpecs['null'];
         }
         
         if ($spec === true) {
-            return v::true();
+            return $this->_cachedSpecs['true'];
         }
         
         if ($spec === false) {
-            return v::false();
+            return $this->_cachedSpecs['false'];
         }
         
+        if ($spec instanceof Optional) {
+            $validatable = $this->createValidatable($spec->getSpec());
+            return v::oneOf($validatable, $this->_cachedSpecs['null']);
+        }
+
         if ($spec instanceof Respect\Validation\Validatable) {
             return $spec;
         }
@@ -57,7 +62,6 @@ class SpecFactory {
             $isRequired = true;
             if ($value instanceof Optional) {
                 $isRequired = false;
-                $value = $value->getSpec();
             }
             
             $v->key($key, $this->createValidatable($value), $isRequired);
@@ -67,7 +71,7 @@ class SpecFactory {
     }
     
     private function _createValidatableFromArray($array) {
-        if (!count($array) != 1) {
+        if (count($array) != 1) {
             throw new \LogicException('Positional arrays in the spec must have exactly one element');
         }
         
@@ -81,12 +85,12 @@ class SpecFactory {
             
             'bool' => v::bool(),
             'boolean' => v::bool(),
-            'true' => v::true(),
-            'false' => v::false(),
+            'true' => v::equals(true, true),
+            'false' => v::equals(false, true),
             
             'float' => v::float(),
             'int' => v::int(),
-            'integer' => v::integer(),
+            'integer' => v::int(),
             'numeric' => v::numeric(),
             'number' => v::numeric(),
 
