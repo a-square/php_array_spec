@@ -37,12 +37,24 @@ class SpecTest extends PHPUnit_Framework_TestCase {
                 null,
             ),
             array(
+                'null',
+                null,
+            ),
+            array(
                 true,
+                true,
+            ),
+            array(
+                'true',
                 true,
             ),
             array(
                 false,
                 false
+            ),
+            array(
+                'false',
+                false,
             ),
             
             // arrays

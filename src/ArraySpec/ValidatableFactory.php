@@ -46,9 +46,8 @@ class ValidatableFactory {
             return $this->_cachedSpecs['false'];
         }
         
-        if ($spec instanceof Optional) {
-            $validatable = $this->createValidatable($spec->getSpec());
-            return v::oneOf($validatable, $this->_cachedSpecs['null']);
+        if ($spec instanceof Transformer) {
+            return $spec->getValidatable($this);
         }
 
         if ($spec instanceof Respect\Validation\Validatable) {
@@ -60,7 +59,7 @@ class ValidatableFactory {
         $v = v::arr();
         foreach ($array as $key => $value) {
             $isRequired = true;
-            if ($value instanceof Optional) {
+            if ($value instanceof Transformers\Optional) {
                 $isRequired = false;
             }
             
