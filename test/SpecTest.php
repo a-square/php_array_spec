@@ -191,6 +191,36 @@ class SpecTest extends PHPUnit_Framework_TestCase {
                 'int',
                 123.456,
             ),
+            
+            array(
+                array('string'),
+                array('1', '2', 3),
+            ),
+            
+            array(
+                true,
+                false,
+            ),
+            
+            array(
+                array('foo' => 'string'),
+                array('bar' => 'baz'),
+            ),
+            
+            array(
+                s::nonEmpty('string'),
+                '',
+            ),
+            
+            array(
+                s::nonEmpty(array('int')),
+                array(),
+            ),
+            
+            array(
+                array('foo' => s::optional('int')),
+                array('foo' => 'bar'),
+            ),
         );
     }
 }
