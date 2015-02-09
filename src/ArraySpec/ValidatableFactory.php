@@ -19,7 +19,7 @@ class ValidatableFactory {
     public function createValidatable($spec) {
         if (is_string($spec)) {
             if (!key_exists($spec, $this->_cachedSpecs)) {
-                $validShorthands = implode(", ", array_keys($this->_precachedSpecs));
+                $validShorthands = implode(", ", array_keys($this->_cachedSpecs));
                 throw new \LogicException("Invalid spec shorthand \"$spec\", the valid ones are $validShorthands");
             }
             
