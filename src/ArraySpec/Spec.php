@@ -26,6 +26,16 @@ class Spec {
         return new Transformers\NonEmpty($spec);
     }
     
+    public static function explain($exception) {
+        $messages = array();
+        $iterator = $exception->getIterator(false, \Respect\Validation\Exceptions\AbstractNestedException::ITERATE_TREE);
+        foreach ($iterator as $m) {
+            $messages[] = $m;
+        }
+        
+        return implode(PHP_EOL, $messages);
+    }
+    
     protected static function _getValidatableFactory() {
         if (!static::$_validatableFactory) {
             $util = new Util();

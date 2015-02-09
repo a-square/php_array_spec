@@ -223,4 +223,31 @@ class SpecTest extends PHPUnit_Framework_TestCase {
             ),
         );
     }
+    
+    /** @dataProvider explainProvider */
+    public function testExplain($spec, $value) {
+        $validatable = s::spec($spec);
+        
+        try {
+            $validatable->assert($value);
+            $this->assertTrue(false);
+        } catch (\Exception $e) {
+            $message = s::explain($e);
+            $this->assertTrue(is_string($message));
+        }
+    }
+    
+    public function explainProvider() {
+        return array(
+            array(
+                'int',
+                null
+            ),
+            
+            array(
+                array('foo' => 'string'),
+                array('bar' => 'baz'),
+            ),
+        );
+    }
 }
