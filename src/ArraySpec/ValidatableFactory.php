@@ -27,6 +27,10 @@ class ValidatableFactory {
         }
         
         if (is_array($spec)) {
+            if (empty($spec)) {
+                return $this->_cachedSpecs['array'];
+            }
+            
             if ($this->_util->isArrayAssoc($spec)) {
                 return $this->_createValidatableFromAssoc($spec);
             } else {

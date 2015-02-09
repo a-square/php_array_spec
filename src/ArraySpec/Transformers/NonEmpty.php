@@ -16,7 +16,7 @@ class NonEmpty implements \Lightsoft\ArraySpec\Transformer {
         $this->_spec = $spec;
     }
     
-    public function getValidatable(ValidatableFactory $validatableFactory) {
+    public function getValidatable(\Lightsoft\ArraySpec\ValidatableFactory $validatableFactory) {
          $validatable = $validatableFactory->createValidatable($this->_spec);
          return $validatable->notEmpty();
     }

@@ -25,6 +25,10 @@ class SpecTest extends PHPUnit_Framework_TestCase {
                 123,
             ),
             array(
+                'number',
+                123.456,
+            ),
+            array(
                 'bool',
                 true,
             ),
@@ -57,7 +61,10 @@ class SpecTest extends PHPUnit_Framework_TestCase {
                 false,
             ),
             
+            //
             // arrays
+            //
+            
             array(
                 array('int'),
                 array(),
@@ -79,6 +86,29 @@ class SpecTest extends PHPUnit_Framework_TestCase {
             ),
             
             array(
+                array(array('foo' => true)),
+                array(array('foo' => true), array('foo' => true)),
+            ),
+            
+            array(
+                array(array('foo' => true)),
+                array(),
+            ),
+            
+            // extraneous keys cannot be rejected in respect/validation :(
+            array(
+                array('foo' => 'int'),
+                array('foo' => 1, 'bar' => 2),
+            ),
+            
+            //
+            // optional
+            //
+            // Note: naked optionals are checked for every test case,
+            // see below
+            //
+            
+            array(
                 array('foo' => s::optional(array('int'))),
                 array(),
             ),
@@ -93,14 +123,49 @@ class SpecTest extends PHPUnit_Framework_TestCase {
                 array('foo' => array(1, 2, 3)),
             ),
             
+            // nested optional
             array(
-                array(array('foo' => true)),
-                array(array('foo' => true), array('foo' => true)),
+                s::optional('int'),
+                null,
+            ),
+
+            array(
+                s::optional('int'),
+                -123,
             ),
             
             array(
-                array(array('foo' => true)),
+                array('foo' => s::optional(s::optional('int'))),
+                array('foo' => null),
+            ),
+            
+            array(
+                array('foo' => s::optional(s::optional('int'))),
                 array(),
+            ),
+            
+            array(
+                array('foo' => s::optional(s::optional('int'))),
+                array('foo' => 123),
+            ),
+            
+            //
+            // non-empty
+            //
+            
+            array(
+                s::nonEmpty(array()),
+                array(1),
+            ),
+            
+            array(
+                s::nonEmpty('array'),
+                array('foo' => 'bar'),
+            ),
+            
+            array(
+                s::nonEmpty('string'),
+                'foo',
             ),
             
         );
@@ -112,5 +177,20 @@ class SpecTest extends PHPUnit_Framework_TestCase {
         }
         
         return $withTopLevelOptional;
+    }
+    
+    /** @dataProvider failureProvider */
+    public function testFailure($spec, $value) {
+        $validatable = s::spec($spec);
+        $this->assertFalse($validatable->validate($value));
+    }
+    
+    public function failureProvider() {
+        return array(
+            array(
+                'int',
+                123.456,
+            ),
+        );
     }
 }
