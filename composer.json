@@ -1,5 +1,9 @@
 {
     "name": "lightsoft/php_array_spec",
+    "description": "Array-based embedded DSL for respect/validation",
+    "keywords": ["lightsoft", "php_array_spec", "respect", "validation", "validator"],
+    "type": "library",
+    "license": "MIT",
     "version": "0.1.0",
     "autoload": {
         "psr-4": {
