@@ -167,7 +167,6 @@ class SpecTest extends PHPUnit_Framework_TestCase {
                 s::nonEmpty('string'),
                 'foo',
             ),
-            
         );
         
         $withTopLevelOptional = array();
@@ -250,30 +249,42 @@ class SpecTest extends PHPUnit_Framework_TestCase {
         );
     }
     
-    /** @dataProvider explainProvider */
-    public function testExplain($spec, $value) {
-        $validatable = s::spec($spec);
+    public function docExamplesTest() {
+        $validatable = array(
+            'foo' => 'string',
+            'bar' => s::nonEmpty('string'),
+            'baz' => s::nonEmpty(array('int')),
+            'qux' => s::optional(array(
+                'foo' => 'number',
+                'bar' => v::oneOf(v::arr(), v::int()),
+            )),
+        );
         
-        try {
-            $validatable->assert($value);
-            $this->assertTrue(false);
-        } catch (\Exception $e) {
-            $message = s::explain($e);
-            $this->assertTrue(is_string($message));
-        }
-    }
-    
-    public function explainProvider() {
-        return array(
-            array(
-                'int',
-                null
-            ),
-            
-            array(
-                array('foo' => 'string'),
-                array('bar' => 'baz'),
+        $test1 = array(
+            'foo' => '',
+            'bar' => 'Lorem ipsum',
+            'baz' => array(1, 2, 3),
+            'qux' => array(
+                'foo' => 1.23,
+                'bar' => array(),
             ),
         );
+        
+        $test2 = array(
+            'foo' => '',
+            'bar' => 'Lorem ipsum',
+            'baz' => array(1, 2, 3),
+            'qux' => null,
+        );
+        
+        $test3 = array(
+            'foo' => '',
+            'bar' => 'Lorem ipsum',
+            'baz' => array(1, 2, 3),
+        );
+        
+        $this->assertTrue($validatable->validate($test1));
+        $this->assertTrue($validatable->validate($test2));
+        $this->assertTrue($validatable->validate($test3));
     }
 }

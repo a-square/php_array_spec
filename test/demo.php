@@ -28,5 +28,5 @@ echo "Valid array is valid!\n\n";
 try {
     $validatable->assert($invalidArray);
 } catch (\Exception $e) {
-    echo s::explain($e);
+    echo $e->getFullMessage();
 }
