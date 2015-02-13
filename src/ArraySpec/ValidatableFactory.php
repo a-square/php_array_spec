@@ -11,11 +11,17 @@ namespace Lightsoft\ArraySpec;
 use Respect\Validation\Validator as v;
 
 class ValidatableFactory {
+    /**
+     * @param Util $util
+     */
     public function __construct($util) {
         $this->_util = $util;
         $this->_precacheSpecs();
     }
     
+    /**
+     * @return \Respect\Validation\Validatable
+     */
     public function createValidatable($spec) {
         if (is_string($spec)) {
             if (!key_exists($spec, $this->_cachedSpecs)) {

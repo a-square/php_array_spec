@@ -13,9 +13,9 @@ namespace Lightsoft\ArraySpec;
  * in a way that allows more embedded DSL type usage without boilerplate
  * unless the client needs to tweak something.
  */
-class Spec {
+final class Spec {
     public static function spec($spec) {
-        return static::_getValidatableFactory()->createValidatable($spec);
+        return self::_getValidatableFactory()->createValidatable($spec);
     }
     
     public static function optional($spec) {
@@ -26,13 +26,13 @@ class Spec {
         return new Transformers\NonEmpty($spec);
     }
     
-    protected static function _getValidatableFactory() {
-        if (!static::$_validatableFactory) {
+    private static function _getValidatableFactory() {
+        if (!self::$_validatableFactory) {
             $util = new Util();
-            static::$_validatableFactory = new ValidatableFactory($util);
+            self::$_validatableFactory = new ValidatableFactory($util);
         }
         
-        return static::$_validatableFactory;
+        return self::$_validatableFactory;
     }
     
     private static $_validatableFactory = null;
